@@ -1,9 +1,9 @@
 package com.example.demo.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,9 +18,33 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public List<Users> getUser(){
-        return userService.getUser();
+    @GetMapping("/")
+    public String viewHomePage(Model model) {
+        List<Users> listuser = userService.listAll();
+        model.addAttribute("liststudent", listuser);
+        System.out.print("Get / ");
+        return "index";
+    }
+    @GetMapping("/new")
+    public String add(Model model) {
+        model.addAttribute("User", new Users());
+        return "new";
+    }
+
+
+    @RequestMapping("/edit/{id}")
+    public ModelAndView showEditStudentPage(@PathVariable(name = "id") int id) {
+        ModelAndView mav = new ModelAndView("new");
+        Users usr = userService.get(id);
+        mav.addObject("student", usr);
+        return mav;
+
+    }
+
+    @DeleteMapping (path= "/delete/{id}")
+    public String deleteuser(@PathVariable(name = "id")Integer id){
+        userService.delete(id);
+        return "redirect:/";
 
     }
 }
